@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Un fetch</title>
+        <style>
+            body {
+                font-family: Helvetica, Arial, sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Hola mundo</h1>
+        <ol id="estudiantes"></ol>
+
+        <script>
+            const URL = "https://api.myjson.online/v1/records/87894c91-623d-4fa6-a8ba-1a01ac4f0e61";
+            fetch(URL)
+                .then((respuesta) => {
+                    if (!respuesta.ok) {
+                        throw new Error("Error HTTP: " + respuesta.status);
+                    }
+                    return respuesta.json();
+                })
+
+                .then((datos) => {
+                    var trabajo = datos.data;
+                    console.log("Datos recibidos:", trabajo);
+                    const donde = document.getElementById("estudiantes");
+
+                    //simple e inseguro
+                    trabajo.forEach((x) => {
+                        var cuantos = [];
+                        if (x.uno != "") {
+                            cuantos.push(x.uno);
+                        }
+                        if (x.dos != "") {
+                            cuantos.push(x.dos);
+                        }
+                        if (x.tres != "") {
+                            cuantos.push(x.tres);
+                        }
+                        if (x.cuatro != "") {
+                            cuantos.push(x.cuatro);
+                        }
+
+                        donde.innerHTML += `<li><a href="${x.cuenta}">${x.nombre}</a> ${pelotitas(cuantos)}</li>`;
+                    });
+
+                    function pelotitas(n) {
+                        var armado = "";
+                        n.forEach((e) => {
+                            armado += `<a href="${e}" target="_blank">◉</a> `;
+                        });
+                        return armado;
+                    }
+
+                    /*
+                    // Esta otra es la format súper pro, recomendada por Claude.ia 
+                    // Demasiado trabajosa para no programadores
+
+                    trabajo.forEach((x) => {
+                    // Validar que x sea un objeto válido
+                    if (!x || typeof x !== "object") return;
+
+                    // Contar propiedades de forma segura
+                    const campos = ["uno", "dos", "tres", "cuatro"];
+                    const cuantos = campos.filter(
+                        (campo) => x[campo] != null && String(x[campo]).trim() !== ""
+                    ).length;
+
+                    // Crear elementos del DOM en lugar de usar innerHTML
+                    const li = document.createElement("li");
+                    const a = document.createElement("a");
+
+                    // Validar que la URL sea segura (solo http/https)
+                    const urlSegura =
+                        typeof x.cuenta === "string" && /^https?:\/\//i.test(x.cuenta)
+                            ? x.cuenta
+                            : "#";
+
+                    a.href = urlSegura;
+                    a.target = "_blank";
+                    a.rel = "noopener noreferrer"; // Protege contra tabnapping
+                    a.textContent = x.nombre ?? "Sin nombre"; // textContent escapa HTML automáticamente
+
+                    li.appendChild(a);
+                    li.appendChild(document.createTextNode(` (${cuantos})`));
+                    ul.appendChild(li);
+                    });
+
+                    */
+                })
+
+                .catch((error) => {
+                    console.error("Algo salió mal:", error);
+                });
+        </script>
+    </body>
+</html>
